@@ -12,6 +12,11 @@ user_info = {
     "q7": 0
 }
 
+st.set_page_config(
+    page_title="Hello",
+    page_icon="👋",
+)
+
 def recommend_app():
     st.title("Sistema de Recomendação Colaborativo de Música")
 
