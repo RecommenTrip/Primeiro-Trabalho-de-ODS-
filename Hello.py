@@ -1,4 +1,13 @@
+import sys
+import os
 import streamlit as st
+import random
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+sys.path.insert(0, parent_dir)
+
+from services.user_service import UserService
 from streamlit_extras.switch_page_button import switch_page
 
 user_info = {
@@ -13,12 +22,18 @@ user_info = {
     "q7": 0
 }
 
+
+user_serv = UserService('http://127.0.0.1:5000/recommendation')
 st.set_page_config(
     page_title="Hello",
     page_icon="👋",
 )
 
 def recommend_app():
+    global recommended_places
+
+    recommended_places = []
+
     st.title("Sistema de Recomendação Colaborativo de Música")
 
     st.write("Bem-vindo ao sistema inteligente que irá te ajudar na decisão da sua próxima viagem!")
@@ -39,9 +54,19 @@ def recommend_app():
     user_info["q7"] = st.slider("Tem interesse por turismo religioso?", 0, 5)
 
     if st.button("Salvar Preferências"):
-        switch_page("Receber Recomendações")
+        recommended_places = user_serv.send_data(user_info)['data']
+        recommended_places = random.sample(recommended_places, 5)
+        print(f"Esses são os locais: {recommended_places}")
         print("Salvar!")
 
+        directory = "common"
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        with open(os.path.join(directory, 'recommended_places.txt'), 'w') as f:
+            for item in recommended_places:
+                f.write("%s\n" % item)
+
+        switch_page("Receber Recomendações")
 
 # Função principal do aplicativo Streamlit
 def main():
