@@ -8,7 +8,6 @@ parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
 sys.path.insert(0, parent_dir)
 
 from services.user_service import UserService
-from common.data import recommended_places
 
 user_info = {
     "nome": "",
@@ -22,6 +21,7 @@ user_info = {
     "q7": 0
 }
 
+
 user_serv = UserService('http://127.0.0.1:5000/recommendation')
 st.set_page_config(
     page_title="Hello",
@@ -29,6 +29,10 @@ st.set_page_config(
 )
 
 def recommend_app():
+    global recommended_places
+
+    recommended_places = []
+
     st.title("Sistema de Recomendação Colaborativo de Música")
 
     st.write("Bem-vindo ao sistema inteligente que irá te ajudar na decisão da sua próxima viagem!")
@@ -54,6 +58,12 @@ def recommend_app():
         print(f"Esses são os locais: {recommended_places}")
         print("Salvar!")
 
+        directory = "common"
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        with open(os.path.join(directory, 'recommended_places.txt'), 'w') as f:
+            for item in recommended_places:
+                f.write("%s\n" % item)
 
 # Função principal do aplicativo Streamlit
 def main():
