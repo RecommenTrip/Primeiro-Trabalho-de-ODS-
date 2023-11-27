@@ -3,7 +3,6 @@ from math import sqrt
 import uuid
 from streamlit_card import card
 
-
 def create_card(title, image):
    unique_key = generate_unique_key()
    hasClicked = card(

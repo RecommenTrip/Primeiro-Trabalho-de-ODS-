@@ -1,4 +1,14 @@
+import sys
+import os
 import streamlit as st
+import random
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+sys.path.insert(0, parent_dir)
+
+from services.user_service import UserService
+from common.data import recommended_places
 
 user_info = {
     "nome": "",
@@ -11,6 +21,8 @@ user_info = {
     "q6": 0,
     "q7": 0
 }
+
+user_serv = UserService('http://127.0.0.1:5000/recommendation')
 
 def recommend_app():
     st.title("Sistema de Recomendação Colaborativo de Música")
@@ -33,6 +45,9 @@ def recommend_app():
     user_info["q7"] = st.slider("Tem interesse por turismo religioso?", 0, 5)
 
     if st.button("Salvar Preferências"):
+        recommended_places = user_serv.send_data(user_info)['data']
+        recommended_places = random.sample(recommended_places, 5)
+        print(f"Esses são os locais: {recommended_places}")
         print("Salvar!")
 
 
