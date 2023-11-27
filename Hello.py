@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_extras.switch_page_button import switch_page
 
 user_info = {
     "nome": "",
@@ -38,6 +39,7 @@ def recommend_app():
     user_info["q7"] = st.slider("Tem interesse por turismo religioso?", 0, 5)
 
     if st.button("Salvar Preferências"):
+        switch_page("Receber Recomendações")
         print("Salvar!")
 
 
