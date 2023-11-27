@@ -44,7 +44,12 @@ def recommend():
 
 # Função para criar o aplicativo Streamlit
 def recommend_app():
-    st.title("Recommentrip te sugere os seguintes locais:")
+    st.markdown(
+    """
+    <h1 style='text-align: center;'>Recommentrip te sugere os seguintes locais:</h1>
+    """,
+    unsafe_allow_html=True
+)
 
     recommendations = recommend()
     
