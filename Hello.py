@@ -8,6 +8,7 @@ parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
 sys.path.insert(0, parent_dir)
 
 from services.user_service import UserService
+from streamlit_extras.switch_page_button import switch_page
 
 user_info = {
     "nome": "",
@@ -56,6 +57,7 @@ def recommend_app():
         recommended_places = user_serv.send_data(user_info)['data']
         recommended_places = random.sample(recommended_places, 5)
         print(f"Esses são os locais: {recommended_places}")
+        switch_page("Receber Recomendações")
         print("Salvar!")
 
         directory = "common"
