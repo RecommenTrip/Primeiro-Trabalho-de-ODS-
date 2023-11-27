@@ -23,6 +23,10 @@ user_info = {
 }
 
 user_serv = UserService('http://127.0.0.1:5000/recommendation')
+st.set_page_config(
+    page_title="Hello",
+    page_icon="👋",
+)
 
 def recommend_app():
     st.title("Sistema de Recomendação Colaborativo de Música")
