@@ -57,7 +57,6 @@ def recommend_app():
         recommended_places = user_serv.send_data(user_info)['data']
         recommended_places = random.sample(recommended_places, 5)
         print(f"Esses são os locais: {recommended_places}")
-        switch_page("Receber Recomendações")
         print("Salvar!")
 
         directory = "common"
@@ -66,6 +65,8 @@ def recommend_app():
         with open(os.path.join(directory, 'recommended_places.txt'), 'w') as f:
             for item in recommended_places:
                 f.write("%s\n" % item)
+
+        switch_page("Receber Recomendações")
 
 # Função principal do aplicativo Streamlit
 def main():
