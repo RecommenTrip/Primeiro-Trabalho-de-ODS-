@@ -1,5 +1,15 @@
 import streamlit as st
+import sys
+import os
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+sys.path.insert(0, parent_dir)
+
+from services.place_service import PlaceService
+
+
+place_serv = PlaceService('http://127.0.0.1:5000/recommendation_places')
 
 def read_file(filepath):
     with open(filepath, 'r') as f:
@@ -15,7 +25,6 @@ places = [
     (recommended_places[2], "https://images.unsplash.com/photo-1533929736458-ca588d08c8be?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
     (recommended_places[3], "https://images.unsplash.com/photo-1533050487297-09b450131914?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
     (recommended_places[4], "https://images.unsplash.com/photo-1492666673288-3c4b4576ad9a?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
-    # Add more recommended places as needed
 ]
 
 def create_card(title, image):
@@ -24,7 +33,9 @@ def create_card(title, image):
         st.image(image, use_column_width=True)
     with col2:
         if st.button(f"Compre agora! - {title}"):
-            print(f"Clicked on: {title}")
+            send_place = place_serv.send_data(title)
+            print(send_place)
+
 
 def main():
     st.markdown("<h1 style='text-align: center;'>Recommentrip te sugere os seguintes locais:</h1>", unsafe_allow_html=True)
