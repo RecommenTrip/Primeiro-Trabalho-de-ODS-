@@ -34,7 +34,7 @@ def recommend_app():
 
     recommended_places = []
 
-    st.title("Sistema de Recomendação Colaborativo de Música")
+    st.title("Bem-vindo ao Recommentrip!")
 
     st.write("Bem-vindo ao sistema inteligente que irá te ajudar na decisão da sua próxima viagem!")
 
@@ -54,6 +54,7 @@ def recommend_app():
     user_info["q7"] = st.slider("Tem interesse por turismo religioso?", 0, 5)
 
     if st.button("Salvar Preferências"):
+        print(user_serv.send_data(user_info))
         recommended_places = user_serv.send_data(user_info)['data']
         recommended_places = random.sample(recommended_places, 5)
         print(f"Esses são os locais: {recommended_places}")
