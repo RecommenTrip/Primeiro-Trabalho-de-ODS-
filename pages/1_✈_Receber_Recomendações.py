@@ -1,6 +1,7 @@
 import streamlit as st
 import sys
 import os
+import random
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
@@ -33,8 +34,17 @@ def create_card(title, image):
         st.image(image, use_column_width=True)
     with col2:
         if st.button(f"Compre agora! - {title}"):
-            send_place = place_serv.send_data(title)
-            print(send_place)
+
+            recommended_places = place_serv.send_data(title)['data']
+            recommended_places = random.sample(recommended_places, 5)
+            print(f"Esses são os locais 2: {recommended_places}")
+
+            directory = "common"
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            with open(os.path.join(directory, 'recommended_places.txt'), 'w') as f:
+                for item in recommended_places:
+                    f.write("%s\n" % item)
 
 
 def main():
