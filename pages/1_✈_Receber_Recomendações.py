@@ -2,6 +2,8 @@ import streamlit as st
 import sys
 import os
 import random
+from unidecode import unidecode
+from fuzzywuzzy import fuzz
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
@@ -12,26 +14,51 @@ from services.place_service import PlaceService
 
 place_serv = PlaceService('http://127.0.0.1:5000/recommendation_places')
 
+def read_city_image_urls(file_path):
+    city_image_urls = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            parts = line.strip().split(',')
+            if len(parts) >= 2:
+                city = parts[0].strip()
+                url = parts[1].strip()
+                city_image_urls[city] = url
+    return city_image_urls
+
 def read_file(filepath):
     with open(filepath, 'r') as f:
         lines = f.readlines()
-    return [line.strip() for line in lines]
+    return [unidecode(line.strip()) for line in lines]
 
 recommended_places = read_file('common/recommended_places.txt')
+city_image_urls = read_city_image_urls('common/city_image_urls.txt')
 
 
-places = [
-    (recommended_places[0], "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
-    (recommended_places[1], "https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=1996&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
-    (recommended_places[2], "https://images.unsplash.com/photo-1533929736458-ca588d08c8be?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
-    (recommended_places[3], "https://images.unsplash.com/photo-1533050487297-09b450131914?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
-    (recommended_places[4], "https://images.unsplash.com/photo-1492666673288-3c4b4576ad9a?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
-]
+places_with_images = []
+
+for place in recommended_places:
+    max_similarity = 0
+    matching_city = None
+    for city in city_image_urls.keys():
+        similarity = fuzz.partial_ratio(place.lower(), city.lower())
+        if similarity > max_similarity:
+            max_similarity = similarity
+            matching_city = city
+    if matching_city:
+        places_with_images.append((place, city_image_urls[matching_city]))
 
 def create_card(title, image):
+    st.markdown("""
+    <style>
+    div.stColumn {
+        padding: 20px 500px; /* Experimente com valores para o padding */
+    }
+    </style>
+""", unsafe_allow_html=True)
+
     col1, col2 = st.columns([2, 8])
     with col1:
-        st.image(image, use_column_width=True)
+      st.image(image, use_column_width='auto')
     with col2:
         if st.button(f"Compre agora! - {title}"):
 
@@ -50,7 +77,7 @@ def create_card(title, image):
 def main():
     st.markdown("<h1 style='text-align: center;'>Recommentrip te sugere os seguintes locais:</h1>", unsafe_allow_html=True)
     
-    for place, image_url in places:
+    for place, image_url in places_with_images:
         create_card(place, image_url)
 
 if __name__ == "__main__":
